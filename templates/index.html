@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Pro Image Filters</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-sliders-h"></i>
+                <h2>Filter Settings</h2>
+            </div>
+
+            <div class="filter-section">
+                <div class="section-title">Available Filters</div>
+                <div class="filter-options" id="filter-options">
+                    <!-- Filters will be injected by Streamlit -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h1>🎨 Pro Image Filters</h1>
+                    <p>Upload an image and apply professional-grade filters</p>
+                </div>
+            </div>
+
+            <div class="upload-container" id="upload-area">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">
+                    <h3>Upload Your Image</h3>
+                    <p>JPG, PNG, or JPEG (Max. 5MB)</p>
+                </div>
+                <div id="file-upload-container">
+                    <!-- Streamlit file uploader will be injected here -->
+                </div>
+            </div>
+
+            <div id="image-display-area">
+                <div class="empty-state">
+                    <i class="fas fa-image"></i>
+                    <h3>No Image Uploaded</h3>
+                    <p>Please upload an image to get started with filtering.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+    <script src="assets/script.js"></script>
+    <script>
+    // This script handles the communication between Streamlit and the custom UI
+    document.addEventListener('DOMContentLoaded', function() {
+        // Listen for messages from Streamlit
+        window.addEventListener('message', function(event) {
+            const data = event.data;
+            
+            if (data.type === 'filter_update') {
+                updateFilteredImage(data.filtered_image);
+            }
+        });
+
+        // Initialize the app
+        initApp();
+    });
+
+    function initApp() {
+        // This would be replaced with actual Streamlit component initialization
+        console.log("App initialized");
+    }
+
+    function updateFilteredImage(imageData) {
+        const imageDisplayArea = document.getElementById('image-display-area');
+        
+        if (imageData) {
+            imageDisplayArea.innerHTML = `
+                <div class="image-comparison fade-in">
+                    <div class="image-card">
+                        <div class="image-card-header">Original Image</div>
+                        <div class="image-preview">
+                            <img src="${imageData.original}" alt="Original">
+                        </div>
+                    </div>
+                    <div class="image-card">
+                        <div class="image-card-header">Filtered Image</div>
+                        <div class="image-preview">
+                            <img src="${imageData.filtered}" alt="Filtered" id="filtered-image">
+                        </div>
+                        <div class="image-actions">
+                            <button class="download-btn" id="download-btn">
+                                <i class="fas fa-download"></i> Download Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Set up download button
+            document.getElementById('download-btn').addEventListener('click', function() {
+                const link = document.createElement('a');
+                link.href = imageData.filtered;
+                link.download = 'filtered_image.png';
+                link.click();
+            });
+        } else {
+            imageDisplayArea.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-image"></i>
+                    <h3>No Image Uploaded</h3>
+                    <p>Please upload an image to get started with filtering.</p>
+                </div>
+            `;
+        }
+    }
+    </script>
+</body>
+</html>
